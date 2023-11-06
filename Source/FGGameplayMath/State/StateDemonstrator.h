@@ -3,8 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FGGameplayMath/Context/RelativeContext.h"
-#include "Math/BoxSphereBounds.h"
 #include "GameFramework/Actor.h"
 #include "StateDemonstrator.generated.h"
 
@@ -13,18 +11,6 @@ class FGGAMEPLAYMATH_API AStateDemonstrator : public AActor
 {
 	GENERATED_BODY()
 
-	float Time;
-
-	FBoxSphereBounds3f AABB;
-
-	ERelativeContext GetRelativeContext(const FTransform* Self, const FTransform* Other);
-	bool ContextPredicate(const ERelativeContext Test, const ERelativeContext Value);
-	float FindAngle(const FVector SelfForward, const FVector TargetForward);
-	
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
 public:
 	// Sets default values for this actor's properties
 	AStateDemonstrator();
@@ -32,18 +18,20 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Meta = (Bitmask, BitmaskEnum = "ERelativeContext"))
-	uint8 ContextFlags;
+	virtual bool ShouldTickIfViewportsOnly() const override;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FVector Extents;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(UIMin=0,UIMax=10))
-	float Duration;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FRuntimeFloatCurve Curve;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Base")
+	UStaticMeshComponent* StaticMeshComponent;
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(UIMin=0,UIMax=100))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="State", meta=(UIMin=0,UIMax=100))
 	float Health;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Context", Meta = (Bitmask, BitmaskEnum = "/Script/FGGameplayMath.ERelativeContext"))
+	int32 ContextFlags;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Context")
+	TArray<AActor*> Demonstrators;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Context")
+	bool DrawArc;
 };

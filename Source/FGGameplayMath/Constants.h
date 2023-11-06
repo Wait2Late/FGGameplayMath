@@ -1,4 +1,4 @@
 #pragma once
 
-constexpr float Angle = 45.f;
-constexpr float Range = 4.f;
+constexpr float CONST_Angle = 45.f;
+constexpr float CONST_Range = 400.f;
