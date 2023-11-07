@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "FGGameplayMath/Demonstrator.h"
 #include "StateDemonstrator.generated.h"
 
-UCLASS(hidecategories=(Input, Movement, Collision, Rendering, HLOD, WorldPartition, DataLayers, Replication, Physics, Networking, Actor, LevelInstance, Cooking))
-class FGGAMEPLAYMATH_API AStateDemonstrator : public AActor
+UCLASS()
+class FGGAMEPLAYMATH_API AStateDemonstrator : public ADemonstrator
 {
 	GENERATED_BODY()
 
@@ -19,9 +19,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual bool ShouldTickIfViewportsOnly() const override;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Base")
-	UStaticMeshComponent* StaticMeshComponent;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="State", meta=(UIMin=0,UIMax=100))
 	float Health;

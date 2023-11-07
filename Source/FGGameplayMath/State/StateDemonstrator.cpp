@@ -8,8 +8,6 @@ AStateDemonstrator::AStateDemonstrator()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
-	
-	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 }
 
 // Called every frame

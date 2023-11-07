@@ -56,22 +56,24 @@ FDebugRenderSceneProxy* UDebugStrings::CreateDebugSceneProxy()
 				if(StateDemonstrator == TargetDemonstrator)
 					continue;
 				
-				auto RelativeContext = UContextHelpers::GetRelativeContext(StateDemonstrator, TargetDemonstrator);
+				const auto RelativeContext = UContextHelpers::GetRelativeContext(StateDemonstrator, TargetDemonstrator);
 
 				if(UContextHelpers::ContextPredicate(RelativeContext, StateDemonstrator->Context))
 				{
 					const auto Item = FDebugText(
 						TargetDemonstrator->GetActorLocation(),
-						FString("Checks out: " + TargetDemonstrator->GetName())
+						FString("Match")
 					);
 		
 					ProxyData.DebugLabels.Add(Item);
 				}
 				else
 				{
+					const auto ContextString = UEnum::GetValueOrBitfieldAsString(static_cast<ERelativeContext>(RelativeContext));
+					
 					const auto Item = FDebugText(
 						TargetDemonstrator->GetActorLocation(),
-						FString("Doesn't: " + TargetDemonstrator->GetName())
+						ContextString
 					);
 		
 					ProxyData.DebugLabels.Add(Item);

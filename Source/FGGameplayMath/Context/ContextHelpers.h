@@ -2,9 +2,16 @@
 
 #pragma once
 
+// Check if a mask has a single flag
 #define TEST_BIT(Bitmask, Bit) (((Bitmask) & (1 << static_cast<int32>(Bit))) > 0)
+
+// Check if a mask contains another mask
 #define TEST_BITS(Bitmask, Bit) (((Bitmask) & Bit) == Bit)
+
+// Set a specific bit
 #define SET_BIT(Bitmask, Bit) (Bitmask |= 1 << static_cast<int32>(Bit))
+
+// Clear a specific bit
 #define CLEAR_BIT(Bitmask, Bit) (Bitmask &= ~(1 << static_cast<int32>(Bit)))
 
 #include "CoreMinimal.h"
@@ -89,9 +96,17 @@ public:
 		return FMath::RadiansToDegrees(FMath::Acos(Dot));
 	}
 
+	// Used for checking a group of flags
 	UFUNCTION(BlueprintCallable, Category = "Context")
 	static bool ContextPredicate(const int32 Test, const int32 Value)
     {
 		return TEST_BITS(Test, Value);
-    }	
+    }
+
+	// Used for checking a single flag
+	UFUNCTION(BlueprintCallable, Category = "Context")
+	static bool FlagPredicate(const int32 Test, const int32 Value)
+	{
+		return TEST_BIT(Test, Value);
+	}	
 };
