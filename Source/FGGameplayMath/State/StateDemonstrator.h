@@ -25,10 +25,10 @@ public:
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="State", meta=(UIMin=0,UIMax=100))
 	float Health;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Context", Meta = (Bitmask, BitmaskEnum = "/Script/FGGameplayMath.ERelativeContext"))
-	int32 ContextFlags;
 	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="State", meta=(Bitmask, BitmaskEnum = "/Script/FGGameplayMath.ERelativeContext"))
+	int32 Context;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Context")
 	TArray<AActor*> Demonstrators;
 

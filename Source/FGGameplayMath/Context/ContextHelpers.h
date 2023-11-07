@@ -2,9 +2,15 @@
 
 #pragma once
 
+#define TEST_BIT(Bitmask, Bit) (((Bitmask) & (1 << static_cast<int32>(Bit))) > 0)
+#define TEST_BITS(Bitmask, Bit) (((Bitmask) & Bit) == Bit)
+#define SET_BIT(Bitmask, Bit) (Bitmask |= 1 << static_cast<int32>(Bit))
+#define CLEAR_BIT(Bitmask, Bit) (Bitmask &= ~(1 << static_cast<int32>(Bit)))
+
 #include "CoreMinimal.h"
 #include "RelativeContext.h"
 #include "FGGameplayMath/Constants.h"
+#include "FGGameplayMath/State/StateDemonstrator.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "ContextHelpers.generated.h"
 
@@ -18,9 +24,8 @@ class FGGAMEPLAYMATH_API UContextHelpers : public UBlueprintFunctionLibrary
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Context")
-	static int32 GetRelativeContext(const AActor* Target, const AActor* Other, FString &ContextString)
+	static int32 GetRelativeContext(const AActor* Target, const AActor* Other)
 	{
-		ContextString = "Context > "; 
 		int32 ReturnContext = 0;
 
 		const auto TargetLocation = Target->GetActorLocation();
@@ -30,73 +35,47 @@ public:
 		const auto LocalSpaceLocation = Target->GetActorTransform().InverseTransformPosition(OtherLocation);
 
 		if(LocalSpaceLocation.X > 0)
-		{
-			ReturnContext |= static_cast<int32>(ERelativeContext::InFront);
-			ContextString += ":InFront"; 
-		}
+			SET_BIT(ReturnContext, ERelativeContext::InFront);
 		else if(LocalSpaceLocation.X < 0)
-		{
-			ReturnContext |= static_cast<int32>(ERelativeContext::Behind);
-			ContextString += ":Behind";
-		}
+			SET_BIT(ReturnContext, ERelativeContext::Behind);
 
 		if(LocalSpaceLocation.Y > 0)
-		{
-			ReturnContext |= static_cast<int32>(ERelativeContext::ToTheRight);
-			ContextString += ":ToTheRight"; 
-		}
+			SET_BIT(ReturnContext, ERelativeContext::ToTheRight);
 		else if(LocalSpaceLocation.Y < 0)
-		{
-			ReturnContext |= static_cast<int32>(ERelativeContext::ToTheLeft);
-			ContextString += ":ToTheLeft";
-		}
+			SET_BIT(ReturnContext, ERelativeContext::ToTheLeft);
 		
 		if(LocalSpaceLocation.Z > 0)
-		{
-			ReturnContext |= static_cast<int32>(ERelativeContext::Above);
-			ContextString += ":Above";
-		}
+			SET_BIT(ReturnContext, ERelativeContext::Above);
 		else if(LocalSpaceLocation.Z < 0)
-		{
-			ReturnContext |= static_cast<int32>(ERelativeContext::Below);
-			ContextString += ":Below";
-		}
+			SET_BIT(ReturnContext, ERelativeContext::Below);
 		
 		const auto Distance = Direction.Length();
 		if(Distance > CONST_Range)
-		{
-			ReturnContext |= static_cast<int32>(ERelativeContext::Far);
-			ContextString += ":Far";
-		}
+			SET_BIT(ReturnContext, ERelativeContext::Far);
 		else
-		{
-			ReturnContext |= static_cast<int32>(ERelativeContext::Close);
-			ContextString += ":Close";
-		}
+			SET_BIT(ReturnContext, ERelativeContext::Close);
 		
 		const auto Angle = FindAngle(Target->GetActorForwardVector(), Direction.GetSafeNormal());
 		const auto HalfGlobalAngle = CONST_Angle * .5f;
 		if(Angle < HalfGlobalAngle && Angle > -HalfGlobalAngle)
-		{
-			ReturnContext |= static_cast<int32>(ERelativeContext::Seen);
-			ContextString += ":Seen";
-		}
+			SET_BIT(ReturnContext, ERelativeContext::Seen);
 		else
-		{
-			ReturnContext |= static_cast<int32>(ERelativeContext::Unseen);
-			ContextString += ":Unseen";
-		}
+			SET_BIT(ReturnContext, ERelativeContext::Unseen);
 
 		const auto FacingDot = FVector::DotProduct(Target->GetActorForwardVector(), Other->GetActorForwardVector());
-		if(FacingDot > .9f)
+		if(FacingDot > CONST_DirectionThreshold)
+			SET_BIT(ReturnContext, ERelativeContext::FacingSame);
+		else if(FacingDot < -CONST_DirectionThreshold)
+			SET_BIT(ReturnContext, ERelativeContext::FacingOpposite);
+
+		if(const auto OtherStateDemonstrator = Cast<AStateDemonstrator>(Other))
 		{
-			ReturnContext |= static_cast<int32>(ERelativeContext::FacingSame);
-			ContextString += ":FacingSame";
-		}
-		else if(FacingDot < -.9f)
-		{
-			ReturnContext |= static_cast<int32>(ERelativeContext::FacingOpposite);
-			ContextString += ":FacingOpposite";
+			const auto Health = OtherStateDemonstrator->Health;
+			
+			if(Health < CONST_DyingThreshold)
+				SET_BIT(ReturnContext, ERelativeContext::NearDeath);
+			else if (Health < CONST_HurtThreshold)
+				SET_BIT(ReturnContext, ERelativeContext::Hurt);
 		}
 
 		return ReturnContext;
@@ -111,10 +90,8 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable, Category = "Context")
-	static bool ContextPredicate(
-		UPARAM(meta=(Bitmask, BitmaskEnum = "ERelativeContext")) int32 Test,
-		UPARAM(meta=(Bitmask, BitmaskEnum = "ERelativeContext")) int32 Value)
+	static bool ContextPredicate(const int32 Test, const int32 Value)
     {
-        return (Value & Test);
+		return TEST_BITS(Test, Value);
     }	
 };
