@@ -56,7 +56,9 @@ FDebugRenderSceneProxy* UDebugStrings::CreateDebugSceneProxy()
 				if(StateDemonstrator == TargetDemonstrator)
 					continue;
 				
-				auto RelativeContext = UContextHelpers::GetRelativeContext(StateDemonstrator, TargetDemonstrator);
+				auto RelativeContext = UContextHelpers::GetRelativeContext(
+					StateDemonstrator,
+					TargetDemonstrator);
 
 				if(UContextHelpers::ContextPredicate(RelativeContext, StateDemonstrator->Context))
 				{
@@ -64,7 +66,7 @@ FDebugRenderSceneProxy* UDebugStrings::CreateDebugSceneProxy()
 						TargetDemonstrator->GetActorLocation(),
 						FString("Checks out: " + TargetDemonstrator->GetName())
 					);
-		
+					
 					ProxyData.DebugLabels.Add(Item);
 				}
 				else
@@ -76,6 +78,7 @@ FDebugRenderSceneProxy* UDebugStrings::CreateDebugSceneProxy()
 		
 					ProxyData.DebugLabels.Add(Item);
 				}
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,  TargetDemonstrator->GetName());
 			}
 		}
 	}

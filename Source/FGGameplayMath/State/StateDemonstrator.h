@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DebugStrings.h"
 #include "GameFramework/Actor.h"
 #include "StateDemonstrator.generated.h"
 
@@ -34,4 +35,6 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Context")
 	bool DrawArc;
+
+	UDebugStrings* DebugStrings;
 };
