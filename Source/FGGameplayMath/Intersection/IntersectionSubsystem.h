@@ -18,10 +18,15 @@ private:
 	GENERATED_BODY()
 
 	TArray<AIntersectionDemonstrator*> IntersectionDemonstrators;
+
+	UPROPERTY()
+	APlayerController* PlayerControllerInstance;
 	
 public:
 	virtual bool IsTickableInEditor() const override;
 	virtual void Tick(float DeltaTime) override;
+
+	void RegisterPlayerController(APlayerController* PlayerController);
 	
 	void RegisterDemonstrator(AIntersectionDemonstrator* Demonstrator);
 	void UnregisterDemonstrator(AIntersectionDemonstrator* Demonstrator);

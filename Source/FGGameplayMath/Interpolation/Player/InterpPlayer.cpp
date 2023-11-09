@@ -1,5 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "InterpPlayer.h"
+
+#include "FGGameplayMath/Intersection/IntersectionSubsystem.h"
 #include "Kismet/KismetMathLibrary.h"
 
 AInterpPlayer::AInterpPlayer()
@@ -28,6 +30,9 @@ void AInterpPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	AccelerationInterpolator.Initialize();
+	
+	const auto Subsystem = GetWorld()->GetSubsystem<UIntersectionSubsystem>();
+	Subsystem->RegisterPlayerController(Cast<APlayerController>(GetController()));
 }
 
 void AInterpPlayer::Tick(float DeltaTime)

@@ -80,6 +80,7 @@ void AIntersectionDemonstrator::DrawShape(const FColor Color)
 			);
 		break;
 
+	// Super-ugly custom cube drawing using lines, since Unreal's cube uses extents-representation of its DrawDebugBox
 	case EIntersection::AABB:
 		DrawDebugPoint(
 			WorldContext,

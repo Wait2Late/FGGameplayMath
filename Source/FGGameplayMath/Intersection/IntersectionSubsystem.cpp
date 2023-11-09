@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "IntersectionSubsystem.h"
-
 #include "IntersectionUtility.h"
 
 bool UIntersectionSubsystem::IsTickableInEditor() const
@@ -135,9 +134,49 @@ void UIntersectionSubsystem::Tick(float DeltaTime)
 
 	for(const auto Demonstrator : IntersectionDemonstrators)
 	{
+		bool bOnScreen;
+		
+		if(Demonstrator->IntersectionType == EIntersection::AABB)
+		{
+			bOnScreen = UIntersectionUtility::AABBOnScreen(
+				Demonstrator->Min,
+				Demonstrator->Max,
+				PlayerControllerInstance
+				);
+		}
+		else
+		{
+			bOnScreen = UIntersectionUtility::IsOnScreen(
+				PlayerControllerInstance,
+				Demonstrator->GetActorLocation()
+				); 
+		}
+		
+		if(bOnScreen)
+		{
+			DrawDebugLine(
+				GetWorld(),
+				PlayerControllerInstance->GetPawn()->GetActorLocation(),
+				Demonstrator->GetActorLocation(),
+				FColor::Emerald
+				);
+			
+			DrawDebugPoint(
+				GetWorld(),
+				Demonstrator->GetActorLocation(),
+				25.f,
+				FColor::Emerald
+				);
+		}
+		
 		if(!Demonstrator->Drawn)
 			Demonstrator->DrawShape(FColor::Green);
 	}	
+}
+
+void UIntersectionSubsystem::RegisterPlayerController(APlayerController* PlayerController)
+{
+	PlayerControllerInstance = PlayerController; 
 }
 
 void UIntersectionSubsystem::RegisterDemonstrator(AIntersectionDemonstrator* Demonstrator)

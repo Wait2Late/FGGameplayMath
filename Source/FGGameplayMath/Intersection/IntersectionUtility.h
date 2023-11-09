@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "IntersectionUtility.generated.h"
 
 /**
@@ -15,6 +16,22 @@ class FGGAMEPLAYMATH_API UIntersectionUtility : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintCallable, Category = "Intersection")
+	static bool IsOnScreen(
+		const APlayerController* PlayerController,
+		const FVector& WorldPosition,
+		const float ScreenSpaceCompare = 0.75f)
+	{
+		FVector2D ScreenPosition;
+		UGameplayStatics::ProjectWorldToScreen(PlayerController, WorldPosition, ScreenPosition);
+
+		int32 ScreenHeight, ScreenWidth;
+		PlayerController->GetViewportSize(ScreenWidth, ScreenHeight);
+
+		return (ScreenPosition.X > ScreenSpaceCompare && ScreenPosition.X < ScreenWidth - ScreenSpaceCompare) &&
+			(ScreenPosition.Y > ScreenSpaceCompare && ScreenPosition.Y < ScreenHeight - ScreenSpaceCompare);
+	}
+	
 	// SphereSphereIntersection
 	UFUNCTION(BlueprintCallable, Category = "Intersection")
 	static bool SphereSphere(
@@ -71,6 +88,17 @@ public:
 		return true;
 	}
 
+	UFUNCTION(BlueprintCallable, Category = "Intersection")
+	static bool AABBOnScreen(
+		const FVector Min,
+		const FVector Max,
+		const APlayerController* PlayerController,
+		const float ScreenCompare = 0.75f)
+	{
+		return IsOnScreen(PlayerController, Min, ScreenCompare)
+			&& IsOnScreen(PlayerController, Max, ScreenCompare);
+	}
+
 	// SphereAABB
 	UFUNCTION(BlueprintCallable, Category = "Intersection")
 	static bool SphereAABB(
@@ -102,7 +130,7 @@ public:
 		return SquareDistance <= Radius * Radius;
 	}	
 
-	// LinePlaneIntersection
+	// RayPlaneIntersection
 	UFUNCTION(BlueprintCallable, Category = "Intersection")
 	static bool RayPlane(
 		const FVector Origin,
