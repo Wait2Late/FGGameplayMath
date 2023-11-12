@@ -4,20 +4,11 @@
 #include "CoreMinimal.h"
 #include "FGGameplayMath/Demonstrator.h"
 #include "CollisionShape.h"
+#include "Intersection.h"
 #include "IntersectionDemonstrator.generated.h"
 
-UENUM()
-enum EIntersection
-{
-	Plane,
-	Sphere,
-	AABB,
-	Triangle,
-	Ray
-}; 
-
 UCLASS()
-class FGGAMEPLAYMATH_API AIntersectionDemonstrator final
+class FGGAMEPLAYMATH_API AIntersectionDemonstrator
 	: public ADemonstrator
 {
 	GENERATED_BODY()

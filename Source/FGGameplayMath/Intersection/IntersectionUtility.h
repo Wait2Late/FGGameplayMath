@@ -16,7 +16,8 @@ class FGGAMEPLAYMATH_API UIntersectionUtility : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Intersection")
+	// Point OnScreen Test
+	UFUNCTION(BlueprintCallable, Category = "Viewport Tests")
 	static bool IsOnScreen(
 		const APlayerController* PlayerController,
 		const FVector& WorldPosition,
@@ -31,27 +32,70 @@ public:
 		return (ScreenPosition.X > ScreenSpaceCompare && ScreenPosition.X < ScreenWidth - ScreenSpaceCompare) &&
 			(ScreenPosition.Y > ScreenSpaceCompare && ScreenPosition.Y < ScreenHeight - ScreenSpaceCompare);
 	}
+
+	// AABB OnScreen Test
+	UFUNCTION(BlueprintCallable, Category = "Viewport Tests")
+	static bool AABBOnScreen(
+		const FVector Min,
+		const FVector Max,
+		const APlayerController* PlayerController,
+		const float ScreenCompare = 0.75f)
+	{
+		return IsOnScreen(PlayerController, Min, ScreenCompare)
+			&& IsOnScreen(PlayerController, Max, ScreenCompare);
+	}	
 	
-	// SphereSphereIntersection
+	// Sphere-Sphere Intersection
 	UFUNCTION(BlueprintCallable, Category = "Intersection")
 	static bool SphereSphere(
 		const FVector CenterA,
 		const float RadiusA,
 		const FVector CenterB,
-		const float RadiusB)
+		const float RadiusB,
+		FVector& ContactPoint)
 	{
 		const auto Diff = CenterA - CenterB;
 		const auto RadiusSum = RadiusA + RadiusB;
-		return Diff.Dot(Diff) <= RadiusSum * RadiusSum;
+
+		const auto bIntersects = Diff.Dot(Diff) <= RadiusSum * RadiusSum;
+
+		if(bIntersects)
+		{
+			const auto Direction = CenterB - CenterA;
+			RaySphere(CenterA, Direction.GetSafeNormal(), CenterB, RadiusB, ContactPoint);
+		}
+
+		return bIntersects;
 	}
 
-	// LineSphereIntersection
+	// Sphere-Plane Intersection
+	UFUNCTION(BlueprintCallable, Category = "Intersection")
+	static bool SpherePlane(
+		const FVector Center,
+		const float Radius,
+		const FVector PlaneCenter,
+		const FVector PlaneNormal,
+		FVector& ContactPoint)
+	{
+		const auto Distance = Center.Dot(PlaneNormal) - PlaneNormal.Dot(PlaneCenter);
+		const auto bIntersects = FMath::Abs(Distance) <= Radius;
+
+		if(bIntersects)
+		{
+			RayPlane(Center, -PlaneNormal, PlaneNormal, PlaneCenter, ContactPoint);
+		}
+		
+		return bIntersects;
+	}
+
+	// Line-Sphere Intersection
 	UFUNCTION(BlueprintCallable, Category = "Intersection")
 	static bool RaySphere(
 		const FVector Origin,
 		const FVector Direction,
 		const FVector Center,
-		const float Radius)
+		const float Radius,
+		FVector& ContactPoint)
 	{
 		const auto W = Center - Origin;
 		const auto WSQ = W.Dot(W);
@@ -65,7 +109,22 @@ public:
 		const auto VSQ = Direction.Dot(Direction);
 
 		// Diff vs radius
-		return (VSQ * WSQ - Projection * Projection <= VSQ * Radius * Radius);
+		const auto bIntersects = (VSQ * WSQ - Projection * Projection <= VSQ * Radius * Radius);
+
+		if(bIntersects)
+		{
+			const auto B = 2.f * Projection;
+			const auto C = WSQ - Radius * Radius;
+			const auto Discriminant = B * B - 4 * VSQ * C;
+			const auto T = (B - FMath::Sqrt(Discriminant)) / (2.f * VSQ);
+
+			if(Discriminant < 0)
+				ContactPoint = Origin + (Direction * -1.f);
+			else
+				ContactPoint = Origin + (Direction * T);
+		}
+		
+		return bIntersects;
 	}
 
 	// AABB-AABB Intersection
@@ -74,7 +133,8 @@ public:
 		const FVector MinA,
 		const FVector MaxA,
 		const FVector MinB,
-		const FVector MaxB)
+		const FVector MaxB,
+		FVector& ContactPoint)
 	{
 		if(MinA.X > MaxB.X || MinB.X > MaxA.X)
 			return false;
@@ -85,21 +145,16 @@ public:
 		if(MinA.Z > MaxB.Z || MinB.Z > MaxA.Z)
 			return false;
 
+		const auto CenterA = (MinA + MaxA) / 2;
+		const auto CenterB = (MinB + MaxB) / 2;
+		const auto Direction = CenterB - CenterA;
+		
+		RayAABB(CenterA, Direction.GetSafeNormal(), MinB, MaxB, ContactPoint);
+
 		return true;
 	}
 
-	UFUNCTION(BlueprintCallable, Category = "Intersection")
-	static bool AABBOnScreen(
-		const FVector Min,
-		const FVector Max,
-		const APlayerController* PlayerController,
-		const float ScreenCompare = 0.75f)
-	{
-		return IsOnScreen(PlayerController, Min, ScreenCompare)
-			&& IsOnScreen(PlayerController, Max, ScreenCompare);
-	}
-
-	// SphereAABB
+	// Sphere-AABB Intersection
 	UFUNCTION(BlueprintCallable, Category = "Intersection")
 	static bool SphereAABB(
 		const FVector Origin,
@@ -128,9 +183,53 @@ public:
 			SquareDistance += (Origin.Z - Max.Z) * (Origin.Z - Max.Z);
 
 		return SquareDistance <= Radius * Radius;
-	}	
+	}
 
-	// RayPlaneIntersection
+	// Ray-AABB Intersection
+	UFUNCTION(BlueprintCallable, Category = "Intersection")
+	static bool RayAABB(
+		const FVector Origin,
+		const FVector Direction,
+		const FVector Min,
+		const FVector Max,
+		FVector& ContactPoint)
+	{
+		const auto T1 = (Min.X - Origin.X) / Direction.X;
+		const auto T2 = (Max.X - Origin.X) / Direction.X;
+		const auto T3 = (Min.Y - Origin.Y) / Direction.Y;
+		const auto T4 = (Max.Y - Origin.Y) / Direction.Y;
+		const auto T5 = (Min.Z - Origin.Z) / Direction.Z;
+		const auto T6 = (Max.Z - Origin.Z) / Direction.Z;
+
+		// Find the largest minimum value
+		const auto TMin = FMath::Max(
+			FMath::Max(
+				FMath::Min(T1,T2),
+				FMath::Min(T3,T4)
+				),
+			FMath::Min(T5,T6)
+			);
+
+		// Find the smallest maximum value
+		const auto TMax = FMath::Min(
+			FMath::Min(
+				FMath::Max(T1,T2),
+				FMath::Max(T3,T4)
+				),
+			FMath::Max(T5,T6)
+			);
+
+		if(TMax < 0 || TMin > TMax)
+			return false;
+
+		const auto T = TMin < 0.f ? TMax : TMin;
+
+		ContactPoint = Origin + (Direction * T);
+
+		return true;
+	}
+
+	// Ray-Plane Intersection
 	UFUNCTION(BlueprintCallable, Category = "Intersection")
 	static bool RayPlane(
 		const FVector Origin,
@@ -154,6 +253,7 @@ public:
 		return true;
 	}
 
+	// Ray-Triangle Intersection
 	UFUNCTION(BlueprintCallable, Category = "Intersection")
 	static bool RayTriangle(
 		const FVector Origin,

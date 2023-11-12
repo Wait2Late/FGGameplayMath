@@ -17,7 +17,7 @@ void ASpringDemonstrator::BeginPlay()
 void ASpringDemonstrator::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 	Goal = Origin + TargetPosition;
 
 	const auto MoveVector = UKismetMathLibrary::VectorSpringInterp(
@@ -32,4 +32,3 @@ void ASpringDemonstrator::Tick(float DeltaTime)
 
 	SetActorLocation(MoveVector);
 }
-

@@ -1,5 +1,4 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -7,7 +6,8 @@
 #include "StateDemonstrator.generated.h"
 
 UCLASS()
-class FGGAMEPLAYMATH_API AStateDemonstrator : public ADemonstrator
+class FGGAMEPLAYMATH_API AStateDemonstrator final
+	: public ADemonstrator
 {
 	GENERATED_BODY()
 

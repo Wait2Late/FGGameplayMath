@@ -14,7 +14,5 @@ enum class ERelativeContext
 	Seen,
 	Unseen,
 	FacingSame,
-	FacingOpposite,
-	Hurt,
-	NearDeath 
+	FacingOpposite
 };

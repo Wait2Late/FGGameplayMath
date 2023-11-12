@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "DebugStrings.h"
-
 #include "StateDemonstrator.h"
 #include "FGGameplayMath/Context/ContextHelpers.h"
 #include "Engine/Canvas.h"
@@ -63,17 +62,6 @@ FDebugRenderSceneProxy* UDebugStrings::CreateDebugSceneProxy()
 					const auto Item = FDebugText(
 						TargetDemonstrator->GetActorLocation(),
 						FString("Match")
-					);
-		
-					ProxyData.DebugLabels.Add(Item);
-				}
-				else
-				{
-					const auto ContextString = UEnum::GetValueOrBitfieldAsString(static_cast<ERelativeContext>(RelativeContext));
-					
-					const auto Item = FDebugText(
-						TargetDemonstrator->GetActorLocation(),
-						ContextString
 					);
 		
 					ProxyData.DebugLabels.Add(Item);

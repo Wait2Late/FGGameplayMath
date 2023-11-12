@@ -2,9 +2,9 @@
 #include "IntersectionSubsystem.h"
 #include "IntersectionUtility.h"
 
-bool UIntersectionSubsystem::IsTickableInEditor() const
+void UIntersectionSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
-	return true;
+	Super::Initialize(Collection);
 }
 
 void UIntersectionSubsystem::Tick(float DeltaTime)
@@ -34,23 +34,73 @@ void UIntersectionSubsystem::Tick(float DeltaTime)
 			if(DemonstratorA->IntersectionType == EIntersection::Sphere &&
 				DemonstratorB->IntersectionType == EIntersection::Sphere)
 			{
+				auto ContactPoint = FVector();
+				
 				IntersectionTest = UIntersectionUtility::SphereSphere(
 					DemonstratorA->GetActorLocation(),
 					DemonstratorA->Radius,
 					DemonstratorB->GetActorLocation(),
-					DemonstratorB->Radius
+					DemonstratorB->Radius,
+					ContactPoint
 				);
+
+				if(IntersectionTest)
+				{
+					DrawDebugPoint(
+						GetWorld(),
+						ContactPoint,
+						25.f,
+						FColor::Cyan
+						);		
+				}
+			}
+
+			if(DemonstratorA->IntersectionType == EIntersection::Sphere &&
+				DemonstratorB->IntersectionType == EIntersection::Plane && !IntersectionTest)
+			{
+				FVector ContactPoint;
+				
+				IntersectionTest = UIntersectionUtility::SpherePlane(
+					DemonstratorA->GetActorLocation(),
+					DemonstratorA->Radius,
+					DemonstratorB->GetActorLocation(),
+					DemonstratorB->GetActorUpVector(),
+					ContactPoint
+					);
+
+				if(IntersectionTest)
+				{
+					DrawDebugPoint(
+						GetWorld(),
+						ContactPoint,
+						25.f,
+						FColor::Cyan
+						);					
+				}
 			}
 
 			if(DemonstratorA->IntersectionType == EIntersection::Ray &&
 				DemonstratorB->IntersectionType == EIntersection::Sphere && !IntersectionTest)
 			{
+				FVector ContactPoint;
+				
 				IntersectionTest = UIntersectionUtility::RaySphere(
 					DemonstratorA->GetActorLocation(),
 					DemonstratorA->GetActorForwardVector(),
 					DemonstratorB->GetActorLocation(),
-					DemonstratorB->Radius
+					DemonstratorB->Radius,
+					ContactPoint
 					);
+
+				if(IntersectionTest)
+				{
+					DrawDebugPoint(
+						GetWorld(),
+						ContactPoint,
+						25.f,
+						FColor::Cyan
+						);					
+				}
 			}
 
 			if(DemonstratorA->IntersectionType == EIntersection::Ray && 
@@ -116,13 +166,50 @@ void UIntersectionSubsystem::Tick(float DeltaTime)
 			if(DemonstratorA->IntersectionType == EIntersection::AABB &&
 				DemonstratorB->IntersectionType == EIntersection::AABB && !IntersectionTest)
 			{
+				FVector ContactPoint;
+				
 				IntersectionTest = UIntersectionUtility::AABBIntersect(
 					DemonstratorA->GetActorLocation() + DemonstratorA->Min,
 					DemonstratorA->GetActorLocation() + DemonstratorA->Max,
 					DemonstratorB->GetActorLocation() + DemonstratorB->Min,
-					DemonstratorB->GetActorLocation() + DemonstratorB->Max
+					DemonstratorB->GetActorLocation() + DemonstratorB->Max,
+					ContactPoint
 					);
+
+				if(IntersectionTest)
+				{
+					DrawDebugPoint(
+						GetWorld(),
+						ContactPoint,
+						25.f,
+						FColor::Cyan
+						);					
+				}
 			}
+
+			if(DemonstratorA->IntersectionType == EIntersection::Ray &&
+				DemonstratorB->IntersectionType == EIntersection::AABB && !IntersectionTest)
+			{
+				FVector ContactPoint;
+				
+				IntersectionTest = UIntersectionUtility::RayAABB(
+					DemonstratorA->GetActorLocation(),
+					DemonstratorA->GetActorForwardVector(),
+					DemonstratorB->GetActorLocation() + DemonstratorB->Min,
+					DemonstratorB->GetActorLocation() + DemonstratorB->Max,
+					ContactPoint
+					);
+
+				if(IntersectionTest)
+				{
+					DrawDebugPoint(
+						GetWorld(),
+						ContactPoint,
+						25.f,
+						FColor::Cyan
+						);					
+				}
+			}			
 			
 			if(IntersectionTest)
 			{

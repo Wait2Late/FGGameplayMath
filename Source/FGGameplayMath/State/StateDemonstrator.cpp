@@ -28,8 +28,8 @@ void AStateDemonstrator::Tick(float DeltaTime)
 		GetWorld(),
 		GetActorLocation(),
 		GetActorForwardVector(),
-		CONST_Range,
-		FMath::DegreesToRadians(CONST_Angle * .5f),
+		GContextRange,
+		FMath::DegreesToRadians(GContextAngle * .5f),
 		0.f,
 		1,
 		FColor::Green
