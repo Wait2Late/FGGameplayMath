@@ -29,10 +29,8 @@ void UCollisionSubsystem::Tick(float DeltaTime)
 	// Update Positions
 	for(const auto Demonstrator : CollisionDemonstrators)
 	{
-		/*
 		if(Demonstrator->ApplyGravity)
 			Demonstrator->AddForce(GGravity);
-			*/
 		
 		Demonstrator->Step(DeltaTime);
 	}

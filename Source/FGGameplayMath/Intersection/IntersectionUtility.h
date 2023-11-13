@@ -127,6 +127,24 @@ public:
 		return bIntersects;
 	}
 
+	UFUNCTION(BlueprintCallable, Category = "Intersection")
+	static bool PointAABB(
+		const FVector Point,
+		const FVector Min,
+		const FVector Max)
+	{
+		if(Point.X > Max.X || Min.X > Point.X)
+			return false;
+
+		if(Point.Y > Max.Y || Min.Y > Point.Y)
+			return false;
+
+		if(Point.Z > Max.Z || Min.Z > Point.Z)
+			return false;
+		
+		return true;
+	}
+
 	// AABB-AABB Intersection
 	UFUNCTION(BlueprintCallable, Category = "Intersection")
 	static bool AABBIntersect(

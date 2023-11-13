@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "CollisionDemonstrator.h"
-
 #include "CollisionSubsystem.h"
 #include "FGGameplayMath/Intersection/ShapeDrawUtility.h"
 #include "Kismet/KismetMathLibrary.h"

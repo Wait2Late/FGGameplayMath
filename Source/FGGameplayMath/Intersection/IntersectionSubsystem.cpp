@@ -11,16 +11,16 @@ void UIntersectionSubsystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	for(const auto Demonstrator : IntersectionDemonstrators)
+	{
+		Demonstrator->Drawn = false;
+	}
+	
 	if(IntersectionDemonstrators.Num() == 1)
 	{
 		IntersectionDemonstrators[0]->DrawShape(FColor::Green);
 		return;
 	}	
-
-	for(const auto Demonstrator : IntersectionDemonstrators)
-	{
-		Demonstrator->Drawn = false;
-	}
 
 	for(const auto DemonstratorA : IntersectionDemonstrators)
 	{
