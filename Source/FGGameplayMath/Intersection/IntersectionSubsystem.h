@@ -10,8 +10,7 @@
  * 
  */
 UCLASS()
-class FGGAMEPLAYMATH_API UIntersectionSubsystem
-	: public UTickableWorldSubsystem
+class FGGAMEPLAYMATH_API UIntersectionSubsystem : public UTickableWorldSubsystem
 {
 	GENERATED_BODY()
 

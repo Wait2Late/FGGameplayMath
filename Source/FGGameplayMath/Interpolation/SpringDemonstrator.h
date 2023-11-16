@@ -8,8 +8,7 @@
 #include "SpringDemonstrator.generated.h"
 
 UCLASS()
-class FGGAMEPLAYMATH_API ASpringDemonstrator
-	: public ADemonstrator
+class FGGAMEPLAYMATH_API ASpringDemonstrator : public ADemonstrator
 {
 	GENERATED_BODY()
 

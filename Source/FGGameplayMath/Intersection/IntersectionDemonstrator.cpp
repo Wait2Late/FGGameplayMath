@@ -27,6 +27,26 @@ void AIntersectionDemonstrator::DrawShape(const FColor Color)
 
 	const auto Location = GetActorLocation();
 	const auto WorldContext = GetWorld();
+// <<<<<<< Updated upstream
+// =======
+//
+// 	const auto C = FVector(Min.X, Max.Y, Min.Z);
+// 	const auto F = FVector(Min.X, Max.Y, Max.Z);
+// 	const auto A = FVector(Min.X, Min.Y, Max.Z);
+// 	const auto D = FVector(Max.X, Min.Y, Max.Z);
+// 	const auto E = FVector(Max.X, Min.Y, Min.Z);
+// 	const auto B = FVector(Max.X, Max.Y, Min.Z);
+//
+// 	const FVector TransformedV0 = GetActorTransform().TransformPosition(V0);
+// 	const FVector TransformedV1 = GetActorTransform().TransformPosition(V1);
+// 	const FVector TransformedV2 = GetActorTransform().TransformPosition(V2);
+// 	
+// 	const auto PlaneExtents = FVector(
+// 		1000.f,
+// 		1000.f,
+// 		0.f
+// 		);	
+// >>>>>>> Stashed changes
 	
 	switch(IntersectionType.GetValue())
 	{

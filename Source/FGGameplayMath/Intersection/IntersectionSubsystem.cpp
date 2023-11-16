@@ -31,7 +31,7 @@ void UIntersectionSubsystem::Tick(float DeltaTime)
 
 			auto IntersectionTest = false;
 
-			if(DemonstratorA->IntersectionType == EIntersection::Sphere &&
+			if( DemonstratorA->IntersectionType == EIntersection::Sphere &&
 				DemonstratorB->IntersectionType == EIntersection::Sphere)
 			{
 				auto ContactPoint = FVector();
@@ -79,7 +79,7 @@ void UIntersectionSubsystem::Tick(float DeltaTime)
 				}
 			}
 
-			if(DemonstratorA->IntersectionType == EIntersection::Ray &&
+			if( DemonstratorA->IntersectionType == EIntersection::Ray &&
 				DemonstratorB->IntersectionType == EIntersection::Sphere && !IntersectionTest)
 			{
 				FVector ContactPoint;
@@ -103,7 +103,7 @@ void UIntersectionSubsystem::Tick(float DeltaTime)
 				}
 			}
 
-			if(DemonstratorA->IntersectionType == EIntersection::Ray && 
+			if( DemonstratorA->IntersectionType == EIntersection::Ray && 
 				DemonstratorB->IntersectionType == EIntersection::Plane && !IntersectionTest)
 			{
 				FVector ContactPoint;
@@ -127,7 +127,7 @@ void UIntersectionSubsystem::Tick(float DeltaTime)
 				}
 			}
 
-			if(DemonstratorA->IntersectionType == EIntersection::Ray && 
+			if( DemonstratorA->IntersectionType == EIntersection::Ray && 
 				DemonstratorB->IntersectionType == EIntersection::Triangle && !IntersectionTest)
 			{
 				FVector ContactPoint;
@@ -152,7 +152,7 @@ void UIntersectionSubsystem::Tick(float DeltaTime)
 				}
 			}
 
-			if(DemonstratorA->IntersectionType == EIntersection::Sphere &&
+			if( DemonstratorA->IntersectionType == EIntersection::Sphere &&
 				DemonstratorB->IntersectionType == EIntersection::AABB && !IntersectionTest)
 			{
 				IntersectionTest = UIntersectionUtility::SphereAABB(
@@ -163,7 +163,7 @@ void UIntersectionSubsystem::Tick(float DeltaTime)
 					);
 			}			
 
-			if(DemonstratorA->IntersectionType == EIntersection::AABB &&
+			if( DemonstratorA->IntersectionType == EIntersection::AABB &&
 				DemonstratorB->IntersectionType == EIntersection::AABB && !IntersectionTest)
 			{
 				FVector ContactPoint;

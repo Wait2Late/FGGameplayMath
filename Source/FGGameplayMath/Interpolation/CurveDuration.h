@@ -3,8 +3,7 @@
 #include "CoreMinimal.h"
 #include "InterpObject.h"
 
-class FCurveDuration final
-	: public FInterpObject
+class FCurveDuration final : public FInterpObject
 {
 	UCurveFloat* Curve;
 	

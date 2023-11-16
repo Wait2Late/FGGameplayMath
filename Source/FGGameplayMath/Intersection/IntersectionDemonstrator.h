@@ -8,8 +8,11 @@
 #include "IntersectionDemonstrator.generated.h"
 
 UCLASS()
-class FGGAMEPLAYMATH_API AIntersectionDemonstrator
-	: public ADemonstrator
+// <<<<<<< Updated upstream
+class FGGAMEPLAYMATH_API AIntersectionDemonstrator : public ADemonstrator
+// =======
+// class FGGAMEPLAYMATH_API AIntersectionDemonstrator final : public ADemonstrator
+// >>>>>>> Stashed changes
 {
 	GENERATED_BODY()
 

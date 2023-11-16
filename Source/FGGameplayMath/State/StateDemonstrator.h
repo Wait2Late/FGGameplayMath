@@ -6,8 +6,7 @@
 #include "StateDemonstrator.generated.h"
 
 UCLASS()
-class FGGAMEPLAYMATH_API AStateDemonstrator final
-	: public ADemonstrator
+class FGGAMEPLAYMATH_API AStateDemonstrator final : public ADemonstrator
 {
 	GENERATED_BODY()
 
