@@ -13,9 +13,7 @@ struct FDebugText
 
 	FDebugText() {};
 		
-	FDebugText(const FVector& InLocation, const FString& InText)
-		: Location(InLocation), Text(InText)
-	{};
+	FDebugText(const FVector& InLocation, const FString& InText) : Location(InLocation), Text(InText){};
 };
 
 struct FDebugSceneProxyData
@@ -27,7 +25,7 @@ class FDebugSceneProxy : public FDebugRenderSceneProxy
 {
 public:
 	FDebugSceneProxy(const UPrimitiveComponent* InComponent, FDebugSceneProxyData* ProxyData)
-		: FDebugRenderSceneProxy(InComponent)
+	: FDebugRenderSceneProxy(InComponent)
 	{
 		DrawType = SolidAndWireMeshes;
 		ViewFlagName = TEXT("DebugText");
@@ -36,11 +34,7 @@ public:
 
 		for(const auto& Text : ProxyData->DebugLabels)
 		{
-			auto NewText = FText3d(
-				Text.Text,
-				Text.Location,
-				FColor::White
-				);
+			auto NewText = FText3d(Text.Text,Text.Location,FColor::White);
 			
 			this->Texts.Add(NewText);
 		}

@@ -34,6 +34,7 @@ void AStateDemonstrator::Tick(float DeltaTime)
 		1,
 		FColor::Green
 		);
+
 }
 
 bool AStateDemonstrator::ShouldTickIfViewportsOnly() const

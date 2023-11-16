@@ -1,7 +1,7 @@
 #pragma once
 
 UENUM(BlueprintType, Meta = (Bitflags))
-enum class ERelativeContext
+enum class ERelativeContext : uint8
 {
 	Behind,
 	InFront,
@@ -14,5 +14,7 @@ enum class ERelativeContext
 	Seen,
 	Unseen,
 	FacingSame,
-	FacingOpposite
+	FacingOpposite,
+	Hurt,
+	NearDeath 
 };

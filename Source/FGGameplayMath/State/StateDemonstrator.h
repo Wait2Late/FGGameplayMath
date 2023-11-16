@@ -1,12 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FGGameplayMath/Demonstrator.h"
+#include "DebugStrings.h"
+#include "GameFramework/Actor.h"
 #include "StateDemonstrator.generated.h"
 
-UCLASS()
-class FGGAMEPLAYMATH_API AStateDemonstrator final : public ADemonstrator
+UCLASS(hidecategories=(Input, Movement, Collision, Rendering, HLOD, WorldPartition, DataLayers, Replication, Physics, Networking, Actor, LevelInstance, Cooking))
+class FGGAMEPLAYMATH_API AStateDemonstrator : public AActor
 {
 	GENERATED_BODY()
 
@@ -18,6 +20,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual bool ShouldTickIfViewportsOnly() const override;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Base")
+	UStaticMeshComponent* StaticMeshComponent;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="State", meta=(UIMin=0,UIMax=100))
 	float Health;
@@ -30,4 +35,6 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Context")
 	bool DrawArc;
+
+	UDebugStrings* DebugStrings;
 };

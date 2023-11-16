@@ -1,20 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+
 #pragma once
 
-// Check if a mask has a single flag
 #define TEST_BIT(Bitmask, Bit) (((Bitmask) & (1 << static_cast<int32>(Bit))) > 0)
-
-// Check if a mask contains another mask
-#define TEST_BITS(Bitmask, Bits) (((Bitmask) & Bits) == Bits)
-
-// Set a specific bit
+#define TEST_BITS(Bitmask, Bit) (((Bitmask) & Bit) == Bit)
 #define SET_BIT(Bitmask, Bit) (Bitmask |= 1 << static_cast<int32>(Bit))
-
-// Clear a specific bit
 #define CLEAR_BIT(Bitmask, Bit) (Bitmask &= ~(1 << static_cast<int32>(Bit)))
 
 #include "CoreMinimal.h"
-#include "LocalContext.h"
 #include "RelativeContext.h"
 #include "FGGameplayMath/Constants.h"
 #include "FGGameplayMath/State/StateDemonstrator.h"
@@ -30,25 +23,7 @@ class FGGAMEPLAYMATH_API UContextHelpers : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Context", meta = ( DefaultToSelf = Target ))
-	static int32 GetLocalContext(const AActor* Target)
-	{
-		int32 ReturnContext = 0;
-
-		if(const auto StateDemonstrator = Cast<AStateDemonstrator>(Target))
-		{
-			const auto Health = StateDemonstrator->Health;
-			
-			if(Health < GContextDyingThreshold)
-				SET_BIT(ReturnContext, ELocalContext::NearDeath);
-			else if (Health < GContextHurtThreshold)
-				SET_BIT(ReturnContext, ELocalContext::Hurt);
-		}
-		
-		return ReturnContext;
-	}
-	
-	UFUNCTION(BlueprintCallable, Category = "Context", meta = ( DefaultToSelf = Target ))
+	UFUNCTION(BlueprintCallable, Category = "Context")
 	static int32 GetRelativeContext(const AActor* Target, const AActor* Other)
 	{
 		int32 ReturnContext = 0;
@@ -75,24 +50,34 @@ public:
 			SET_BIT(ReturnContext, ERelativeContext::Below);
 		
 		const auto Distance = Direction.Length();
-		if(Distance > GContextRange)
+		if(Distance > CONST_Range)
 			SET_BIT(ReturnContext, ERelativeContext::Far);
 		else
 			SET_BIT(ReturnContext, ERelativeContext::Close);
 		
 		const auto Angle = FindAngle(Target->GetActorForwardVector(), Direction.GetSafeNormal());
-		const auto HalfGlobalAngle = GContextAngle * .5f;
+		const auto HalfGlobalAngle = CONST_Angle * .5f;
 		if(Angle < HalfGlobalAngle && Angle > -HalfGlobalAngle)
 			SET_BIT(ReturnContext, ERelativeContext::Seen);
 		else
 			SET_BIT(ReturnContext, ERelativeContext::Unseen);
 
 		const auto FacingDot = FVector::DotProduct(Target->GetActorForwardVector(), Other->GetActorForwardVector());
-		if(FacingDot > GContextDirectionThreshold)
+		if(FacingDot > CONST_DirectionThreshold)
 			SET_BIT(ReturnContext, ERelativeContext::FacingSame);
-		else if(FacingDot < -GContextDirectionThreshold)
+		else if(FacingDot < -CONST_DirectionThreshold)
 			SET_BIT(ReturnContext, ERelativeContext::FacingOpposite);
-		
+
+		if(const auto OtherStateDemonstrator = Cast<AStateDemonstrator>(Other))
+		{
+			const auto Health = OtherStateDemonstrator->Health;
+			
+			if(Health < CONST_DyingThreshold)
+				SET_BIT(ReturnContext, ERelativeContext::NearDeath);
+			else if (Health < CONST_HurtThreshold)
+				SET_BIT(ReturnContext, ERelativeContext::Hurt);
+		}
+
 		return ReturnContext;
 	}
 
@@ -104,17 +89,9 @@ public:
 		return FMath::RadiansToDegrees(FMath::Acos(Dot));
 	}
 
-	// Used for checking a group of flags
 	UFUNCTION(BlueprintCallable, Category = "Context")
 	static bool ContextPredicate(const int32 Test, const int32 Value)
     {
 		return TEST_BITS(Test, Value);
-    }
-
-	// Used for checking a single flag
-	UFUNCTION(BlueprintCallable, Category = "Context")
-	static bool FlagPredicate(const int32 Test, const int32 Value)
-	{
-		return TEST_BIT(Test, Value);
-	}	
+    }	
 };

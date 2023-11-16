@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "DebugStrings.h"
+
 #include "StateDemonstrator.h"
 #include "FGGameplayMath/Context/ContextHelpers.h"
 #include "Engine/Canvas.h"
@@ -55,17 +56,29 @@ FDebugRenderSceneProxy* UDebugStrings::CreateDebugSceneProxy()
 				if(StateDemonstrator == TargetDemonstrator)
 					continue;
 				
-				const auto RelativeContext = UContextHelpers::GetRelativeContext(StateDemonstrator, TargetDemonstrator);
+				auto RelativeContext = UContextHelpers::GetRelativeContext(
+					StateDemonstrator,
+					TargetDemonstrator);
 
 				if(UContextHelpers::ContextPredicate(RelativeContext, StateDemonstrator->Context))
 				{
 					const auto Item = FDebugText(
 						TargetDemonstrator->GetActorLocation(),
-						FString("Match")
+						FString("Checks out: " + TargetDemonstrator->GetName())
+					);
+					
+					ProxyData.DebugLabels.Add(Item);
+				}
+				else
+				{
+					const auto Item = FDebugText(
+						TargetDemonstrator->GetActorLocation(),
+						FString("Doesn't: " + TargetDemonstrator->GetName())
 					);
 		
 					ProxyData.DebugLabels.Add(Item);
 				}
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,  TargetDemonstrator->GetName());
 			}
 		}
 	}

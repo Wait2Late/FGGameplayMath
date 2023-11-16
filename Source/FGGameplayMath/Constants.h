@@ -1,9 +1,7 @@
 #pragma once
 
-constexpr float GContextAngle = 45.f;
-constexpr float GContextRange = 400.f;
-constexpr float GContextDirectionThreshold = .9f;
-constexpr float GContextHurtThreshold = .5f;
-constexpr float GContextDyingThreshold = .1f;
-
-const FVector GGravity = FVector(0,0,-9.8f);
+constexpr float CONST_Angle = 45.f;
+constexpr float CONST_Range = 400.f;
+constexpr float CONST_DirectionThreshold = .9f;
+constexpr float CONST_HurtThreshold = .5f;
+constexpr float CONST_DyingThreshold = .1f;
