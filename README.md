@@ -1,1 +1,1 @@
-Most of the maps need to be played and moved manually for colliders/intersectors to make any effects.
+Most of the maps need to be played and moved manually for colliders/intersectors to make any effects. Everything is done in C++ and have not used any of the lecture files. Except for deriving from ADemonstrator class to my own.
